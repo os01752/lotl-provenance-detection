@@ -1,0 +1,5 @@
+## auditd rules for LotL provenance capture
+## load with: sudo augenrules --load && sudo systemctl restart auditd
+-D
+-b 8192
+-a always,exit -F arch=b64 -S execve,execveat -k lotl_exec
