@@ -1,0 +1,9 @@
+dataset,detector,TP,FP,FN,TN,precision,recall,F1,FPR
+Linux lab,Name-based baseline,3,0,0,5,1.0,1.0,1.0,0.0
+Linux lab,Provenance score >= 1,3,0,0,5,1.0,1.0,1.0,0.0
+Linux lab,Provenance score >= 2,1,0,2,5,1.0,0.333,0.5,0.0
+Linux lab,Provenance score ROC-AUC,,,,,,,1.0,
+Windows pilot,Name-based baseline,15,2,1,36,0.882,0.938,0.909,0.053
+Windows pilot,Provenance score >= 1,15,1,1,37,0.938,0.938,0.938,0.026
+Windows pilot,Provenance score >= 2,13,1,3,37,0.929,0.812,0.867,0.026
+Windows pilot,Provenance score ROC-AUC,,,,,,,0.961,
