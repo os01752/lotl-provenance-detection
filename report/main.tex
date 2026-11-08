@@ -210,7 +210,7 @@ binaries.
 
 \emph{Linux lab.} The lab runs Ubuntu Server 26.04 (ARM64) in a UTM virtual
 machine on an Apple-silicon laptop. A kernel audit rule records every
-successful or failed program execution:
+program execution attempt, successful or not:
 \begin{center}\small
 \texttt{-a always,exit -F arch=b64 -S execve,execveat -k lotl\_exec}
 \end{center}
@@ -382,8 +382,9 @@ held-out data in the final evaluation.
 
 \subsection{Interpretation of Results}
 The Linux graphs show the structure the method relies on
-(Fig.~\ref{fig:linux}). Every benign task is a shallow fan-out: one shell
-starts a few ordinary utilities and nothing more. The encoded-shell attack
+(Fig.~\ref{fig:linux}). Every benign task is shallow: one shell starts a few
+ordinary utilities, and at most one of them starts a helper of its own (for
+example, \texttt{dpkg} calling \texttt{dpkg-query}). The encoded-shell attack
 looks different even though it starts from the same shell, because a
 \texttt{base64} decoder and a second \texttt{bash} reading from a pipe sit
 side by side under it, which is exactly the pattern the decode-to-shell
