@@ -10,8 +10,9 @@
 # usage (inside the VM, from ~/lotl):  ./capture_all.sh
 set -u
 cd "$(dirname "$0")"
-[ -x ./capture.sh ] || { echo "capture.sh not found next to this script"; exit 1; }
+mkdir -p captures
 sudo -v || exit 1                                    # cache sudo for ausearch
+sudo auditctl -l | grep -q lotl_exec || { echo "audit rule lotl_exec not loaded"; exit 1; }
 
 # --- safety backups --------------------------------------------------------
 crontab -l > "$HOME/.lotl_crontab.bak" 2>/dev/null || : > "$HOME/.lotl_crontab.bak"
@@ -25,8 +26,18 @@ restore() {
 trap restore EXIT
 
 # run <label>  (command is read from the heredoc that follows)
-run() { local label=$1 cmd; cmd=$(cat); ./capture.sh "$label" "$cmd" >/dev/null 2>&1; \
-        printf '%-45s %3s execs\n' "$label" "$(grep -c '^type=SYSCALL' "captures/$label.log")"; sleep 1; }
+# Note: ausearch reads events from stdin whenever stdin is not a terminal, so
+# --input-logs is required to make it read the audit log inside a script.
+run() {
+  local label=$1 cmd start
+  cmd=$(cat)
+  start=$(date +%H:%M:%S); sleep 1
+  bash -c "$cmd" </dev/null >/dev/null 2>&1
+  sleep 1
+  sudo ausearch --input-logs -k lotl_exec -ts "$start" --raw > "captures/$label.log" 2>/dev/null </dev/null
+  printf '%-45s %3s execs\n' "$label" "$(grep -c '^type=SYSCALL' "captures/$label.log")"
+  sleep 1
+}
 
 echo "== benign administration =="
 run benign_disk_usage <<'CMD'
